@@ -10,7 +10,7 @@ st.markdown("""
     .stButton>button { width: 100%; background-color: #007bff; color: white; height: 3em; border-radius: 10px; }
     .result-box { background-color: #ffffff; padding: 20px; border-radius: 10px; border-left: 5px solid #007bff; }
     </style>
-    """, unsafe_allow_name=True)
+    """, unsafe_allow_html=True)
 
 st.title("⚙️ Werkstatt-Profi: Bohr-Rechner")
 st.write("Berechne präzise Lochabstände für deine Werkstücke.")
