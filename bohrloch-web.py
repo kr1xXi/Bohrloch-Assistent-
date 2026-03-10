@@ -11,7 +11,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("⚙️ Werkstatt-Profi: Bohr-Rechner")
+st.title("⚙️ Führungsschienen: Bohr-Rechner")
 st.write("Berechne präzise Lochabstände für deine Werkstücke.")
 
 # Eingabe-Bereich
