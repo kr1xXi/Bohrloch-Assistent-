@@ -3,7 +3,7 @@ import streamlit as st
 # Design-Konfiguration
 st.set_page_config(page_title="Bohr-Master 3000", page_icon="⚙️")
 
-st.title("⚙️ Werkstatt: Bohr-Rechner")
+st.title("⚙️ Führungsschienen: Bohr-Rechner")
 
 # Eingabe
 L = st.number_input("Gesamtlänge des Werkstücks (cm):", min_value=1.0, value=120.0, step=0.1)
