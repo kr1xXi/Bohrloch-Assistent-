@@ -17,22 +17,19 @@ eingabe = st.text_area("Maße in cm eingeben (z.B. 45, 30, 110...):", "50, 80, 4
 
 if st.button("Schnittplan berechnen"):
     # Daten verarbeiten
-        try:
-        # Die Eingabe wird jetzt schlauer verarbeitet
+    try:
+        # Alles hier ist eingerückt!
         stuecke = []
-        # Wir teilen die Eingabe bei Komma oder Leerzeichen
         roh_daten = eingabe.replace(",", " ").split()
         
         for daten in roh_daten:
-        if "x" in daten.lower():
-                # Wenn ein 'x' drin ist, z.B. "6x120"
+            if "x" in daten.lower():
                 anzahl, mass = daten.lower().split("x")
                 stuecke.extend([float(mass)] * int(anzahl))
-        else:
-                # Normales Maß, z.B. "120"
+            else:
                 stuecke.append(float(daten))
         
-        stuecke.sort(reverse=True) # Die großen zuerst einplanen
+        stuecke.sort(reverse=True)
         
         # ... ab hier geht der Rest vom Code (stangen = []) ganz normal weiter
 
