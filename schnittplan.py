@@ -24,11 +24,11 @@ if st.button("Schnittplan berechnen"):
         roh_daten = eingabe.replace(",", " ").split()
         
         for daten in roh_daten:
-            if "x" in daten.lower():
+        if "x" in daten.lower():
                 # Wenn ein 'x' drin ist, z.B. "6x120"
                 anzahl, mass = daten.lower().split("x")
                 stuecke.extend([float(mass)] * int(anzahl))
-            else:
+        else:
                 # Normales Maß, z.B. "120"
                 stuecke.append(float(daten))
         
