@@ -3,7 +3,7 @@ import streamlit as st
 st.set_page_config(page_title="Schnittplan-Profi", page_icon="✂️")
 
 st.title("🪚 Schnittplan-Optimierer")
-st.write("Berechne, wie du deine Leisten am effizientesten sägst.")
+st.write("Berechne, wie du deine Führungsschienen am effizientesten sägst.")
 
 # Eingabe-Bereich
 with st.sidebar:
@@ -17,28 +17,25 @@ eingabe = st.text_area("Maße in cm eingeben (z.B. 45, 30, 110...):", "50, 80, 4
 
 if st.button("Schnittplan berechnen"):
     # Daten verarbeiten
-    try:
-        stuecke = [float(x.strip()) for x in eingabe.replace(",", " ").split() if x.strip()]
+        try:
+        # Die Eingabe wird jetzt schlauer verarbeitet
+        stuecke = []
+        # Wir teilen die Eingabe bei Komma oder Leerzeichen
+        roh_daten = eingabe.replace(",", " ").split()
+        
+        for daten in roh_daten:
+            if "x" in daten.lower():
+                # Wenn ein 'x' drin ist, z.B. "6x120"
+                anzahl, mass = daten.lower().split("x")
+                stuecke.extend([float(mass)] * int(anzahl))
+            else:
+                # Normales Maß, z.B. "120"
+                stuecke.append(float(daten))
+        
         stuecke.sort(reverse=True) # Die großen zuerst einplanen
         
-        stangen = []
-        
-        for stueck in stuecke:
-            if stueck > lager_laenge:
-                st.error(f"Fehler: Das Stück {stueck} cm ist länger als dein Lager-Material!")
-                st.stop()
-                
-            passt_in_vorhandene = False
-            for s in stangen:
-                # Prüfen: Summe der Stücke + notwendige Schnitte
-                anzahl_schnitte = len(s) 
-                if sum(s) + stueck + (anzahl_schnitte * schnittbreite) <= lager_laenge:
-                    s.append(stueck)
-                    passt_in_vorhandene = True
-                    break
-            
-            if not passt_in_vorhandene:
-                stangen.append([stueck])
+        # ... ab hier geht der Rest vom Code (stangen = []) ganz normal weiter
+
         
         # Ergebnis-Anzeige
         st.divider()
