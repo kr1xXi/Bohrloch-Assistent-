@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Werkstatt Pro Dark</title>
+    <style>
+        /* FARBSCHEMA */
+        :root {
+            --bg-dark: #121212;
+            --card-bg: #1e1e1e;
+            --primary: #f39c12; /* Sattes Werkstatt-Orange */
+            --text: #e0e0e0;
+            --accent: #27ae60;
+            --border: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container { width: 100%; max-width: 500px; }
+
+        /* NAVIGATION UNTEN (Daumen-freundlich) */
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #1a1a1a;
+            display: flex;
+            border-top: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .nav button {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .nav button.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            margin-bottom: 80px; /* Platz für Nav */
+            border: 1px solid var(--border);
+        }
+
+        h2 { color: var(--primary); margin-top: 0; font-size: 1.4rem; }
+
+        label { display: block; margin: 15px 0 5px; color: #aaa; font-size: 0.9rem; }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 18px; /* Größer für Handys */
+            box-sizing: border-box;
+        }
+
+        input:focus { border-color: var(--primary); outline: none; }
+
+        button.main-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
+
+        /* ERGEBNISSE */
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #252525;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            line-height: 1.6;
+        }
+
+        .highlight { color: var(--primary); font-weight: bold; font-size: 1.2rem; }
+
+        /* VISUALISIERUNG */
+        .visu-container {
+            position: relative;
+            width: 100%;
+            height: 40px;
+            background: #333;
+            margin: 25px 0;
+            border-radius: 6px;
+            border: 1px solid #444;
+        }
+
+        .hole {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: #ff4444;
+            border-radius: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px rgba(255,68,68,0.6);
+        }
+
+        .bar-bg { height: 12px; background: #333; border-radius: 6px; margin: 10px 0; }
+        .bar-fill { height: 100%; background: var(--accent); border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="pageBohr" class="card">
+        <h2>🔩 Bohr-Assistent</h2>
+        <label>Gesamtlänge Schiene (cm)</label>
+        <input type="number" id="bohrL" value="120" step="0.1" inputmode="decimal">
+        
+        <button class="main-btn" onclick="calcBohr()">Berechnen</button>
+
+        <div id="resBohr" style="display:none;">
+            <div id="bohrVisu" class="visu-container"></div>
+            <div id="bohrText" class="result"></div>
+        </div>
+    </div>
+
+    <div id="pageSchnitt" class="card" style="display:none;">
+        <h2>🪚 Schnitt-Optimierung</h2>
+        <label>Rohmaterial Länge (cm)</label>
+        <input type="number" id="schienL" value="600" inputmode="decimal">
+        
+        <label>Teile (z.B. 4x120, 85.5)</label>
+        <textarea id="teileInput" rows="3">3x150, 2x80</textarea>
+        
+        <button class="main-btn" onclick="calcSchnitt()">Schnittplan erstellen</button>
+        
+        <div id="resSchnitt" class="result" style="display:none;"></div>
+    </div>
+</div>
+
+<div class="nav">
+    <button id="btnBohr" class="active" onclick="showPage('bohr')">BOHREN</button>
+    <button id="btnSchnitt" onclick="showPage('schnitt')">SÄGEN</button>
+</div>
+
+<script>
+    function showPage(p) {
+        document.getElementById('pageBohr').style.display = p === 'bohr' ? 'block' : 'none';
+        document.getElementById('pageSchnitt').style.display = p === 'schnitt' ? 'block' : 'none';
+        document.getElementById('btnBohr').className = p === 'bohr' ? 'active' : '';
+        document.getElementById('btnSchnitt').className = p === 'schnitt' ? 'active' : '';
+        window.scrollTo(0,0);
+    }
+
+    function calcBohr() {
+        let L = parseFloat(document.getElementById('bohrL').value);
+        let n = L < 70 ? 1 : L < 130 ? 2 : L < 170 ? 3 : L < 210 ? 4 : 5;
+        let start = 3.3, ende = L - 15, pos = [];
+        if (n === 1) pos.push(start);
+        else {
+            let step = (ende - start) / (n - 1);
+            for(let i=0; i<n; i++) pos.push(start + i*step);
+        }
+        
+        document.getElementById('resBohr').style.display = 'block';
+        let visu = document.getElementById('bohrVisu');
+        visu.innerHTML = '';
+        pos.forEach(p => {
+            let dot = document.createElement('div');
+            dot.className = 'hole';
+            dot.style.left = (p/L*100) + '%';
+            visu.appendChild(dot);
+        });
+
+        let abstand = n > 1 ? ((ende-start)/(n-1)).toFixed(2) : '---';
+        document.getElementById('bohrText').innerHTML = `
+            Anzahl Löcher: <span class="highlight">${n} Stk</span><br>
+            Loch-zu-Loch: <span class="highlight">${abstand} cm</span><hr style="border:0; border-top:1px solid #444;">
+            <b>Kettenmaß:</b><br>
+            1. Loch bei: 3.3 cm<br>
+            ${n > 1 ? `Dann jeweils <span style="color:var(--accent)">+ ${abstand} cm</span> weitermessen` : ''}
+        `;
+    }
+
+    function calcSchnitt() {
+        let lager = parseFloat(document.getElementById('schienL').value);
+        let nutzbar = lager - 3; // 3cm Anschnitt
+        let saege = 0.3; // 3mm Sägeblatt
+        let input = document.getElementById('teileInput').value;
+        let teile = [];
+        input.replace(/,/g, ' ').split(/\s+/).forEach(d => {
+            if(d.includes('x')) {
+                let [anz, m] = d.split('x');
+                for(let i=0; i<parseInt(anz); i++) teile.push(parseFloat(m));
+            } else if(d) teile.push(parseFloat(d));
+        });
+        teile.sort((a,b) => b-a);
+
+        let schienen = [];
+        teile.forEach(t => {
+            let gepackt = false;
+            for(let s of schienen) {
+                let belegt = s.reduce((a,b) => a+b, 0) + (s.length * saege);
+                if(belegt + t <= nutzbar) { s.push(t); gepackt = true; break; }
+            }
+            if(!gepackt) schienen.push([t]);
+        });
+
+        let res = document.getElementById('resSchnitt');
+        res.style.display = 'block';
+        let html = `Bedarf: <span class="highlight">${schienen.length} Schienen</span><br><br>`;
+        schienen.forEach((s, i) => {
+            let sum = s.reduce((a,b) => a+b, 0) + (s.length-1)*saege;
+            html += `<b>Schiene ${i+1}:</b> ${s.join(' | ')} cm<br>
+            <div class="bar-bg"><div class="bar-fill" style="width:${(sum/nutzbar*100)}%"></div></div>
+            <small>Rest: ${(nutzbar-sum).toFixed(1)} cm</small><br><br>`;
+        });
+        res.innerHTML = html;
+    }
+</script>
+
+</body>
+</html>
