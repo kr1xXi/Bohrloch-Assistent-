@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalorien Rechner (Dark Mode)</title>
+    <style>
+        /* --- Dark Mode Styles --- */
+        body { 
+            font-family: sans-serif; 
+            background-color: #121212; /* Sehr dunkler Hintergrund */
+            color: #e0e0e0; /* Hellgrauer Text für besseren Kontrast */
+            padding: 20px; 
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .card { 
+            background: #1e1e1e; /* Etwas helleres Dunkel für die Karte */
+            padding: 25px; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5); /* Dunklerer Schatten */
+            max-width: 380px; 
+            width: 100%;
+        }
+
+        h2 { 
+            color: #ffffff; 
+            font-size: 1.4rem; 
+            text-align: center;
+            margin-top: 0;
+        }
+
+        label { 
+            display: block; 
+            margin-top: 15px; 
+            font-size: 0.9rem; 
+            color: #b0b0b0; /* Abgedunkelter Label-Text */
+        }
+
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 5px; 
+            border: 1px solid #333; /* Dunkle Umrandung */
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            background-color: #2a2a2a; /* Dunkle Input-Felder */
+            color: #ffffff; /* Weißer Text beim Tippen */
+            font-size: 1rem;
+        }
+
+        /* Verhindert gelbe Hintergrundfarbe bei Autofill in manchen Browsern */
+        input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 30px #2a2a2a inset !important;
+            -webkit-text-fill-color: #ffffff !important;
+        }
+
+        button { 
+            width: 100%; 
+            background-color: #388E3C; /* Ein etwas dunkleres Grün, passt besser */
+            color: white; 
+            border: none; 
+            padding: 15px; 
+            margin-top: 25px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 1.1rem;
+            transition: background-color 0.2s;
+        }
+
+        button:hover { 
+            background-color: #4CAF50; /* Heller beim Drüberfahren */
+        }
+
+        .result { 
+            margin-top: 25px; 
+            padding: 20px; 
+            background-color: #1b5e20; /* Dunkelgrüner Hintergrund für das Ergebnis */
+            border-radius: 8px; 
+            text-align: center; 
+            font-weight: bold; 
+            color: #a5d6a7; /* Hellgrüner Text */
+            border: 1px solid #2e7d32;
+        }
+
+        hr {
+            margin: 25px 0; 
+            border: 0; 
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>🍲 Constanze's 
+    
+    'Topf-Rechner</h2>
+    
+    <label>Gesamt-Kalorien (alle Zutaten)</label>
+    <input type="number" id="gesamtKcal" placeholder="z.B. 1500" inputmode="numeric">
+    
+    <label>Gesamt-Gewicht Essen (Gramm)</label>
+    <input type="number" id="gesamtGramm" placeholder="z.B. 2000" inputmode="numeric">
+    
+    <hr>
+    
+    <label>Deine Portion (Gramm)</label>
+    <input type="number" id="portionGramm" placeholder="z.B. 400" inputmode="numeric">
+    
+    <button onclick="berechneKcal()">Kalorien berechnen</button>
+    
+    <div id="ausgabe" class="result" style="display: none;"></div>
+</div>
+
+<script>
+// Die JavaScript-Logik bleibt gleich
+function berechneKcal() {
+    const gesamtKcalInput = document.getElementById('gesamtKcal');
+    const gesamtGrammInput = document.getElementById('gesamtGramm');
+    const portionGrammInput = document.getElementById('portionGramm');
+
+    const gesamtKcal = parseFloat(gesamtKcalInput.value);
+    const gesamtGramm = parseFloat(gesamtGrammInput.value);
+    const portionGramm = parseFloat(portionGrammInput.value);
+
+    const anzeige = document.getElementById('ausgabe');
+
+    // Prüfen, ob gültige Zahlen eingegeben wurden und nicht durch 0 geteilt wird
+    if (gesamtKcal > 0 && gesamtGramm > 0 && portionGramm > 0) {
+        
+        const ergebnis = (gesamtKcal / gesamtGramm) * portionGramm;
+        
+        anzeige.style.display = "block";
+        anzeige.innerHTML = "Deine Portion hat ca.<br><span style='font-size: 1.8rem; color: #ffffff;'>" + Math.round(ergebnis) + " kcal</span>";
+        
+        // Soft-Keyboard auf Handys einklappen
+        document.activeElement.blur();
+
+    } else {
+        alert("Bitte fülle alle Felder mit gültigen Zahlen aus (größer als 0).");
+        anzeige.style.display = "none";
+    }
+}
+</script>
+
+</body>
+</html>
