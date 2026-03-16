@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Werkstatt Pro Dark</title>
+    <title>Führungsschienen Pro Dark</title>
     <style>
         :root {
             --bg-dark: #121212;
@@ -191,7 +191,7 @@
     // ... (Die Funktionen calcBohr und calcSchnitt bleiben wie gehabt) ...
     function calcBohr() {
         let L = parseFloat(document.getElementById('bohrL').value);
-        let n = L < 70 ? 1 : L < 130 ? 2 : L < 170 ? 3 : L < 210 ? 4 : 5;
+        let n = L < 70 ? 2 : L < 130 ? 3 : L < 170 ? 4 : L < 210 ? 5 : 5;
         let start = 3.3, ende = L - 15, pos = [];
         if (n === 1) pos.push(start);
         else {
