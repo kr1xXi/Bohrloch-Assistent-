@@ -128,15 +128,28 @@
 
 <div class="container">
     <div id="pageBohr" class="card">
-        <h2>🔩 Bohr-Assistent</h2>
-        <label>Gesamtlänge Schiene (cm)</label>
-        <input type="number" id="bohrL" value="120" step="0.1" inputmode="decimal">
-        <button class="main-btn" onclick="calcBohr()">Berechnen</button>
-        <div id="resBohr" style="display:none;">
-            <div id="bohrVisu" class="visu-container"></div>
-            <div id="bohrText" class="result"></div>
-        </div>
+    <h2>🔩 Bohr-Assistent</h2>
+    
+    <label>Gesamtlänge Schiene (cm)</label>
+    <input type="number" id="bohrL" value="120" step="0.1" inputmode="decimal">
+
+    <label>Start-Maß (1. Loch)</label>
+    <div style="display: flex; align-items: center; gap: 15px; margin: 10px 0; background: #2a2a2a; padding: 10px; border-radius: 8px;">
+        <input type="radio" id="s33" name="startM" value="3.3" checked style="width:20px; height:20px; accent-color: var(--primary);">
+        <label for="s33" style="margin:0; cursor:pointer;">3.3 cm</label>
+        
+        <input type="radio" id="s15" name="startM" value="15" style="width:20px; height:20px; accent-color: var(--primary); margin-left: 15px;">
+        <label for="s15" style="margin:0; cursor:pointer;">15.0 cm</label>
     </div>
+
+    <button class="main-btn" onclick="calcBohr()">BERECHNEN</button>
+    
+    <div id="resBohr" style="display:none;">
+        <div id="bohrVisu" class="visu-container"></div>
+        <div id="bohrText" class="result"></div>
+    </div>
+</div>
+
 
     <div id="pageSchnitt" class="card" style="display:none;">
         <h2>🪚 Schnitt-Optimierung</h2>
@@ -190,26 +203,45 @@
 
     // ... (Die Funktionen calcBohr und calcSchnitt bleiben wie gehabt) ...
     function calcBohr() {
-        let L = parseFloat(document.getElementById('bohrL').value);
-        let n = L < 70 ? 2 : L < 130 ? 3 : L < 170 ? 4 : L < 210 ? 5 : 5;
-        let start = 3.3, ende = L - 15, pos = [];
-        if (n === 1) pos.push(start);
-        else {
-            let step = (ende - start) / (n - 1);
-            for(let i=0; i<n; i++) pos.push(start + i*step);
+    let L = parseFloat(document.getElementById('bohrL').value);
+    
+    // Hier prüfen wir, welcher Radio-Button aktiv ist
+    let start = document.getElementById('s15').checked ? 15.0 : 3.3;
+    
+    let ende = L - 15; // Das Endmaß bleibt fix bei L - 15
+    let n = L < 70 ? 1 : L < 130 ? 2 : L < 170 ? 3 : L < 210 ? 4 : 5;
+    
+    let pos = [];
+    if (n === 1) {
+        pos.push(start);
+    } else {
+        let step = (ende - start) / (n - 1);
+        for(let i=0; i<n; i++) {
+            pos.push(start + i*step);
         }
-        document.getElementById('resBohr').style.display = 'block';
-        let visu = document.getElementById('bohrVisu');
-        visu.innerHTML = '';
-        pos.forEach(p => {
-            let dot = document.createElement('div');
-            dot.className = 'hole';
-            dot.style.left = (p/L*100) + '%';
-            visu.appendChild(dot);
-        });
-        let abstand = n > 1 ? ((ende-start)/(n-1)).toFixed(2) : '---';
-        document.getElementById('bohrText').innerHTML = `Anzahl Löcher: <span class="highlight">${n} Stk</span><br>Loch-zu-Loch: <span class="highlight">${abstand} cm</span><hr style="border:0; border-top:1px solid #444;"><b>Kettenmaß:</b><br>1. Loch bei: 3.3 cm<br>${n > 1 ? `Dann jeweils <span style="color:var(--accent)">+ ${abstand} cm</span> weitermessen` : ''}`;
     }
+    
+    document.getElementById('resBohr').style.display = 'block';
+    let visu = document.getElementById('bohrVisu');
+    visu.innerHTML = '';
+    pos.forEach(p => {
+        let dot = document.createElement('div');
+        dot.className = 'hole';
+        dot.style.left = (p/L*100) + '%';
+        visu.appendChild(dot);
+    });
+
+    let abstand = n > 1 ? ((ende-start)/(n-1)).toFixed(2) : '---';
+    document.getElementById('bohrText').innerHTML = `
+        Startpunkt: <span class="highlight">${start} cm</span><br>
+        Anzahl Löcher: <span class="highlight">${n} Stk</span><br>
+        Loch-zu-Loch: <span class="highlight">${abstand} cm</span><hr style="border:0; border-top:1px solid #444;">
+        <b>Kettenmaß:</b><br>
+        1. Loch bei: ${start} cm<br>
+        ${n > 1 ? `Dann jeweils <span style="color:var(--accent)">+ ${abstand} cm</span>` : ''}
+    `;
+}
+
 
     function calcSchnitt() {
         let lager = parseFloat(document.getElementById('schienL').value);
