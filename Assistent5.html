@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -162,7 +163,7 @@
     </div>
 
     <div id="pageSchraube" class="card" style="display:none;">
-        <h2>📦 Pack-Liste</h2>
+        <h2>📦 Pack-Liste für Heinz von Heiden</h2>
         <label>Lange Schienen (6 Schr. pro Paar)</label>
         <input type="number" id="countLang" value="0" inputmode="numeric" oninput="calcSchrauben()">
         
@@ -175,12 +176,22 @@
         </div>
     </div>
 </div>
+<div id="pageRal" class="card" style="display:none;">
+    <h2>🎨 RAL Farbwähler</h2>
+    <input type="text" id="ralSearch" placeholder="Nummer oder Name suchen..." oninput="searchRal()" 
+           style="margin-bottom: 15px; border-color: var(--primary);">
+    
+    <div id="ralList" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
+        </div>
+</div>
 
 <div class="nav">
     <button id="btnBohr" class="active" onclick="showPage('bohr')">BOHREN</button>
     <button id="btnSchnitt" onclick="showPage('schnitt')">SÄGEN</button>
     <button id="btnSchraube" onclick="showPage('schraube')">PACKEN</button>
+    <button id="btnRal" onclick="showPage('ral')">RAL</button>
 </div>
+
 
 <script>
     function showPage(p) {
@@ -209,7 +220,7 @@
     let start = document.getElementById('s15').checked ? 15.0 : 3.3;
     
     let ende = L - 15; // Das Endmaß bleibt fix bei L - 15
-    let n = L < 70 ? 1 : L < 130 ? 2 : L < 170 ? 3 : L < 210 ? 4 : 5;
+    let n = L < 70 ? 2 : L < 130 ? 3 : L < 170 ? 4 : L < 210 ? 5 : 5;
     
     let pos = [];
     if (n === 1) {
@@ -274,6 +285,64 @@
         });
         res.innerHTML = html;
     }
+  const ralColors = [
+    {n:"1000", name:"Grünbeige", hex:"#BEBD7F"}, {n:"1001", name:"Beige", hex:"#C2B078"},
+    {n:"1013", name:"Perlweiß", hex:"#EAE6CA"}, {n:"1015", name:"Hellelfenbein", hex:"#E6D690"},
+    {n:"1021", name:"Rapsgelb", hex:"#F3DA0B"}, {n:"2004", name:"Reinorange", hex:"#E15501"},
+    {n:"3000", name:"Feuerrot", hex:"#AF2B1E"}, {n:"3003", name:"Rubinrot", hex:"#820616"},
+    {n:"3005", name:"Weinrot", hex:"#5E2129"}, {n:"5002", name:"Ultramarinblau", hex:"#073E87"},
+    {n:"5010", name:"Enzianblau", hex:"#0E467F"}, {n:"5012", name:"Lichtblau", hex:"#3481B8"},
+    {n:"6005", name:"Moosgrün", hex:"#2F4538"}, {n:"6009", name:"Tannengrün", hex:"#213024"},
+    {n:"7001", name:"Silbergrau", hex:"#8F999F"}, {n:"7011", name:"Eisengrau", hex:"#434B4D"},
+    {n:"7016", name:"Anthrazitgrau", hex:"#383E42"}, {n:"7021", name:"Schwarzgrau", hex:"#2F353B"},
+    {n:"7035", name:"Lichtgrau", hex:"#D7D7D7"},{n:"7039", name:"Quarzgrau", hex:"#6B695F"},{n:"7040", name:"Fenstergrau", hex:"#999999"},
+    {n:"8017", name:"Schokobraun", hex:"#45322E"},{n:"8077", name:"Schwarzbraun", hex:"#3E312C"},{n:"9001", name:"Cremeweiß", hex:"#FDF4E3"},
+    {n:"9002", name:"Grauweiß", hex:"#E7EBDA"}, {n:"9003", name:"Signalweiß", hex:"#F4F4F4"},
+    {n:"9005", name:"Tiefschwarz", hex:"#0A0A0A"}, {n:"9006", name:"Weißaluminium", hex:"#A5A5A5"},
+    {n:"9007", name:"Graualuminium", hex:"#8F8F8F"}, {n:"9010", name:"Reinweiß", hex:"#F4F4F4"},
+    {n:"9016", name:"Verkehrsweiß", hex:"#F6F6F6"}
+    
+    // Hinweis: Dies ist eine Auswahl der wichtigsten. 
+    // Für alle 213 Farben wäre der Code hier zu lang, 
+    // aber du kannst dieses Muster beliebig erweitern!
+];
+
+function searchRal() {
+    let q = document.getElementById('ralSearch').value.toLowerCase();
+    let list = document.getElementById('ralList');
+    list.innerHTML = '';
+    
+    ralColors.filter(c => c.n.includes(q) || c.name.toLowerCase().includes(q)).forEach(c => {
+        let div = document.createElement('div');
+        div.style = "display:flex; align-items:center; background:#252525; margin-bottom:8px; padding:12px; border-radius:10px; border:1px solid #333;";
+        div.innerHTML = `
+            <div style="width:50px; height:50px; background:${c.hex}; border-radius:8px; margin-right:15px; box-shadow: inset 0 0 5px rgba(0,0,0,0.5);"></div>
+            <div style="flex:1;">
+                <div style="color:var(--primary); font-weight:bold; font-size:1.1rem;">RAL ${c.n}</div>
+                <div style="color:#aaa; font-size:0.9rem;">${c.name}</div>
+            </div>
+            <div style="color:#555; font-size:0.7rem;">${c.hex}</div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+// Damit die Seite beim ersten Klick nicht leer ist:
+setTimeout(searchRal, 100);
+
+// Vergiss nicht, die showPage Funktion um 'ral' zu erweitern:
+function showPage(p) {
+    const pages = ['pageBohr', 'pageSchnitt', 'pageSchraube', 'pageRal'];
+    const buttons = ['btnBohr', 'btnSchnitt', 'btnSchraube', 'btnRal'];
+    
+    pages.forEach(id => document.getElementById(id).style.display = 'none');
+    buttons.forEach(id => document.getElementById(id).classList.remove('active'));
+    
+    document.getElementById('page' + p.charAt(0).toUpperCase() + p.slice(1)).style.display = 'block';
+    document.getElementById('btn' + p.charAt(0).toUpperCase() + p.slice(1)).classList.add('active');
+    window.scrollTo(0,0);
+}
+
 </script>
 </body>
 </html>
